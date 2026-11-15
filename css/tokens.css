@@ -1,0 +1,67 @@
+:root {
+  --bg: #f4f6fb;
+  --bg-deep: #e7ecf6;
+  --paper: #ffffff;
+  --ink: #102033;
+  --muted: #5c6573;
+  --line: #e4e8f0;
+  --line-strong: #d3d8e4;
+  --navy: #003060;
+  --blue: #008090;
+  --blue-deep: #006270;
+  --teal: #008090;
+  --ink-btn: #008090;
+  --gold: #c47a1a;
+  --sun: #e8942a;
+  --danger: #b42318;
+  --ok: #157a45;
+  --aside: #123;
+  --sans: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --serif: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p { margin: 0; }
+
+a { color: inherit; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+button { cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -40px;
+  background: var(--ink);
+  color: #fff;
+  padding: 8px 12px;
+  z-index: 20;
+}
+
+.skip:focus { top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
