@@ -6,7 +6,7 @@ export default defineConfig({
   define: { 'process.env.NODE_ENV': JSON.stringify('production') },
   resolve: { alias: { '@': path.resolve(import.meta.dirname, 'ui') } },
   build: {
-    outDir: 'ui-dist',
+    outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: { onwarn(warning, warn) { if (warning.code === 'MODULE_LEVEL_DIRECTIVE' && warning.message.includes('use client')) return; warn(warning); } },
     lib: { entry: 'ui/main.jsx', name: 'RiseUIBundle', formats: ['iife'], fileName: () => 'rise-ui.js', cssFileName: 'rise-ui' },
