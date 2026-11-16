@@ -1,12 +1,12 @@
 :root {
-  --bg: #f4f6fb;
+  --bg: #f3f7f8;
   --bg-deep: #e7ecf6;
   --paper: #ffffff;
   --ink: #102033;
   --muted: #5c6573;
   --line: #e4e8f0;
   --line-strong: #d3d8e4;
-  --navy: #003060;
+  --navy: #123d47;
   --blue: #008090;
   --blue-deep: #006270;
   --teal: #008090;
@@ -16,8 +16,8 @@
   --danger: #b42318;
   --ok: #157a45;
   --aside: #123;
-  --sans: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
-  --serif: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --sans: "DM Sans", "Avenir Next", "Segoe UI", sans-serif;
+  --serif: "DM Sans", "Avenir Next", "Segoe UI", sans-serif;
   color-scheme: light;
 }
 
@@ -53,14 +53,15 @@ button { cursor: pointer; }
 .skip {
   position: absolute;
   left: 12px;
-  top: -40px;
+  top: 0;
+  transform: translateY(-150%);
   background: var(--ink);
   color: #fff;
   padding: 8px 12px;
   z-index: 20;
 }
 
-.skip:focus { top: 12px; }
+.skip:focus { top: 12px; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

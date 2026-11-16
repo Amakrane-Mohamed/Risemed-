@@ -71,7 +71,7 @@ function author(record) {
 }
 
 function brand(href) {
-  return `<a class="brand" href="${href}"><img src="images/logo.png" alt=""><span>RISE <em>MED</em></span></a>`;
+  return `<a class="brand" href="${href}"><span class="app-logo"><img src="images/risemed-brand.jpeg" alt=""></span><span>RISE <em>MED</em></span></a>`;
 }
 
 let remote = null;
@@ -268,15 +268,15 @@ function authView(mode) {
     <aside class="auth-aside">
       ${brand("index.html")}
       <div>
-        <h1>The account is where the project lives after the training day.</h1>
-        <p>Youth keep lessons, a CV, and the work they're building. Investors read that and answer funding requests.</p>
+        <span class="auth-eyebrow">THE RISE MED COMMUNITY</span><h1>Learn something.<br>Build something.</h1>
+        <p>A space to develop your ideas, learn practical skills and connect with people who believe in your potential.</p><div class="auth-values"><span>✳ Practical learning</span><span>↗ Local opportunity</span></div>
       </div>
-        <p>Sign-in is handled by Supabase. Open the confirmation mail before the first sign-in if one arrives.</p>
+        <p>RISE MED · Rooted in Tunisia. Open to possibility.</p>
     </aside>
     <div class="auth-main">
       <form class="sheet" data-form="${mode}">
-        <h2>${signup ? "Create an account" : "Sign in"}</h2>
-        <p class="hint">${signup ? "Youth or investor comes on the next screen." : "Use the email and password from the account you created."}</p>
+        <h2>${signup ? "Join the community" : "Welcome back."}</h2>
+        <p class="hint">${signup ? "Create an account to access lessons and join the community." : "Your ideas, learning and community are right here."}</p>
         <div class="stack">
           ${signup ? `<div><label for="name">Name</label><input id="name" name="name" autocomplete="name" placeholder="Your name"></div>` : ""}
           <div><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@email.com"></div>
@@ -381,7 +381,8 @@ function onboardView() {
 function shell(name, inner) {
   const user = Store.current();
   const initials = user.name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase() || "R";
-  const links = NAV.map(([id, label]) => `<a class="navlink ${name === id ? "on" : ""}" href="#/${id}">${label}</a>`).join("");
+  const icons = {home:"⌂",communities:"♧",courses:"▤",funding:"↗",offers:"◇",forums:"☷",live:"◉",share:"✧"};
+  const links = NAV.map(([id, label]) => `<a class="navlink ${name === id ? "on" : ""}" ${name === id ? 'aria-current="page"' : ""} href="#/${id}"><span class="nav-icon" aria-hidden="true">${icons[id]}</span>${label}${name === id ? '<span class="nav-active-dot"></span>' : ''}</a>`).join("");
   const bannerText = keysOn()
     ? "Your sign-in is saved in Supabase. Posts, funding requests, and RSVPs still stay in this browser."
     : "Preview on this browser. Live accounts start when Supabase is connected.";
@@ -391,20 +392,20 @@ function shell(name, inner) {
   return `<div class="app">
     <aside class="side" id="side">
       ${brand("#/home")}
-      <nav aria-label="Account">${links}</nav>
+      <p class="sidebar-caption">YOUR WORKSPACE</p><nav aria-label="Account">${links}</nav><div class="sidebar-mission"><span>✳</span><strong>Your project.<br>Your community.</strong><a href="index.html#mission">Meet RISE MED ↗</a></div>
       <a class="me" href="#/profile">
         <span class="avatar">${esc(initials)}</span>
         <span><strong>${esc(user.name)}</strong><small>${esc(roleLabel(user.role))} · ${esc(user.town || "No town yet")}</small></span>
       </a>
     </aside>
-    <button class="scrim" type="button" data-act="close-menu"></button>
+    <button class="scrim" type="button" data-act="close-menu" aria-label="Close navigation"></button>
     <div class="main">
       <div class="mobile-bar">
         <button class="btn ghost small" type="button" data-act="open-menu">Menu</button>
         ${brand("#/home")}
       </div>
       ${banner}
-      <div class="content">${inner}</div>
+      <header class="workspace-bar"><div><span>Workspace</span><i>/</i><strong>${esc(NAV.find(item => item[0] === name)?.[1] || "Profile")}</strong></div><a href="#/profile"><span class="workspace-status"></span>${esc(roleLabel(user.role))} account <span class="avatar">${esc(initials)}</span></a></header><div class="content page-${name}">${inner}</div>
     </div>
   </div>`;
 }
@@ -424,34 +425,15 @@ function viewHome() {
   const upcoming = nextLesson(user);
   const near = SAMPLE.sessions.find((session) => user.town && session.place.toLowerCase().indexOf(user.town.toLowerCase()) !== -1) || SAMPLE.sessions[0];
   const groups = SAMPLE.communities.filter((item) => !Store.mine("memberships", "communityId", item.id)).slice(0, 2);
-  return `<h1 class="home-title">${esc(user.name)}</h1>
-    <p class="quiet">${esc(user.town || "Town not set")} · ${esc(langList(user))}</p>
-    <div class="home-grid">
-      <div>
-        <section class="panel">
-          <p class="kicker">Project</p>
-          <h2>${esc(user.projectName || "No project name yet")}</h2>
-          <p class="quiet">${esc(user.projectAbout || user.goal || "Add a goal from your profile when you have the words.")}</p>
-          ${user.stage ? `<p class="quiet">${esc(stageLabel(user.stage))}</p>` : ""}
-        </section>
-        <section class="panel">
-          <p class="kicker">Lesson</p>
-          ${upcoming ? `<h2>${esc(upcoming.course.title)}</h2><p class="quiet">${esc(upcoming.lesson.title)} · ${esc(upcoming.course.language)}</p><a class="btn small" style="margin-top:12px" href="#/courses/${upcoming.course.id}">Open</a>` : `<p>You've opened the example lessons. Live courses come with the database.</p>`}
-        </section>
-      </div>
-      <aside class="stack-panels">
-        <section class="panel">
-          <p class="kicker">In person <span class="tag ex">Example</span></p>
-          <h2>${esc(near.title)}</h2>
-          <p class="quiet">${esc(near.place)}</p>
-          <a class="btn ghost small" style="margin-top:12px" href="#/live">Sessions</a>
-        </section>
-        <section class="panel">
-          <p class="kicker">Not joined yet</p>
-          ${groups.length ? groups.map((item) => `<p style="margin-top:8px"><a href="#/communities/${item.id}">${esc(item.name)}</a></p>`).join("") : `<p class="quiet">You're in the example groups.</p>`}
-        </section>
-      </aside>
-    </div>`;
+  const lessons = SAMPLE.courses.flatMap(course => course.lessons);
+  const opened = lessons.filter(lesson => Store.mine("lessons", "lessonId", lesson.id)).length;
+  const memberships = SAMPLE.communities.filter(group => Store.mine("memberships", "communityId", group.id)).length;
+  const percent = lessons.length ? Math.round(opened / lessons.length * 100) : 0;
+  return `<header class="dashboard-heading"><div><p class="kicker">YOUR WORKSPACE</p><h1>Good to see you, ${esc(user.name.split(" ")[0])}.</h1><p class="quiet">Continue a lesson, update your project or find a local group.</p></div><a class="btn ghost" href="#/profile">My profile ↗</a></header>
+    <section class="dashboard-welcome"><div><span class="dashboard-eyebrow">YOUR LEARNING</span><h2>Keep learning.<br>Build your business.</h2><p>Pick up a practical skill and bring it into your next project.</p><a class="btn welcome-btn" href="${upcoming ? '#/courses/' + upcoming.course.id : '#/courses'}">${upcoming ? 'Continue learning' : 'Explore courses'} <span>↗</span></a></div><div class="dashboard-orbit" aria-hidden="true"><span>✳</span><i></i><b>LEARN · BUILD · GROW</b></div></section>
+    <div class="dashboard-stats"><a href="#/courses"><span>▤</span><div><strong>${opened}<small> / ${lessons.length}</small></strong><p>Example lessons opened</p></div><i>↗</i></a><a href="#/communities"><span>♧</span><div><strong>${memberships}</strong><p>Communities joined</p></div><i>↗</i></a><a href="#/profile"><span>◇</span><div><strong>${user.projectName ? 'In progress' : 'Your first step'}</strong><p>${esc(user.projectName || 'Start shaping your project')}</p></div><i>↗</i></a></div>
+    <div class="home-grid"><div><section class="panel project-panel"><div class="panel-heading"><p class="kicker">MY PROJECT</p><a href="#/profile">Edit project ↗</a></div><span class="project-symbol">◇</span><h2>${esc(user.projectName || "Add your business idea.")}</h2><p class="quiet">${esc(user.projectAbout || user.goal || "Add your idea and a goal. You can build on them as you learn.")}</p><div class="project-foot"><span class="tag">${esc(stageLabel(user.stage) || 'Exploring possibilities')}</span><a href="#/funding">Explore funding ↗</a></div></section><section class="panel next-lesson"><div class="panel-heading"><p class="kicker">KEEP YOUR MOMENTUM</p><span class="tag ex">Example content</span></div>${upcoming ? `<div class="next-lesson-body"><span class="course-mini-art">✳</span><div><h2>${esc(upcoming.course.title)}</h2><p class="quiet">${esc(upcoming.lesson.title)}</p><a href="#/courses/${upcoming.course.id}">Open next lesson ↗</a></div></div>` : '<h2>You have explored every example lesson.</h2>'}<div class="lesson-progress"><i style="width:${percent}%"></i></div><p class="progress-note">${percent}% of example lessons opened</p></section></div>
+    <aside class="stack-panels"><section class="panel session-panel"><p class="kicker">BEYOND THE SCREEN <span class="tag ex">Example</span></p><div class="session-art">◉<span>LOCAL CONNECTIONS</span></div><h2>${esc(near.title)}</h2><p class="quiet">${esc(near.place)}</p><a href="#/live">Explore local sessions ↗</a></section><section class="panel"><div class="panel-heading"><p class="kicker">FIND YOUR PEOPLE</p><a href="#/communities">View all ↗</a></div>${groups.length ? groups.map(item => `<a class="community-shortcut" href="#/communities/${item.id}"><span>♧</span><div><strong>${esc(item.name)}</strong><small>${esc(item.place)}</small></div><i>↗</i></a>`).join("") : '<p class="quiet">You have joined every example community.</p>'}</section></aside></div>`;
 }
 
 function investorHome(user) {
@@ -485,18 +467,10 @@ function investorHome(user) {
 }
 
 function viewCommunities() {
-  return `<header class="page-head"><h1>Communities</h1><p>Groups tied to a place or a kind of work. Join one, then write in it.</p></header>
-    ${SAMPLE.communities.map((item) => {
-      const joined = Store.mine("memberships", "communityId", item.id);
-      return `<div class="row">
-        <div>
-          <h2><a href="#/communities/${item.id}">${esc(item.name)}</a></h2>
-          <p>${esc(item.blurb)}</p>
-          <p><span class="tag ex">Example</span> ${esc(item.place)}</p>
-        </div>
-        <button class="btn ${joined ? "ghost" : ""} small" type="button" data-act="join" data-id="${item.id}">${joined ? "Leave" : "Join"}</button>
-      </div>`;
-    }).join("")}`;
+  return `<header class="page-head"><p class="kicker">BETTER TOGETHER</p><h1>Your local communities.</h1><p>Local knowledge, shared ideas and a little encouragement. Explore example communities and find your starting point.</p></header><div class="community-catalog">${SAMPLE.communities.map((item,index) => {
+    const joined = Store.mine("memberships","communityId",item.id);
+    return `<article class="community-card"><div class="community-card-top"><span class="community-emblem emblem-${index%3}">${['♧','✳','◇'][index%3]}</span><span class="tag ex">Example</span></div><p class="kicker">◉ ${esc(item.place)}</p><h2><a href="#/communities/${item.id}">${esc(item.name)}</a></h2><p>${esc(item.blurb)}</p><div class="community-card-foot"><a href="#/communities/${item.id}">Explore group ↗</a><button class="btn ${joined?'ghost':''} small" type="button" data-act="join" data-id="${item.id}">${joined?'Leave group':'Join group'}</button></div></article>`;
+  }).join("")}</div>`;
 }
 
 function viewCommunity(id) {
@@ -521,16 +495,10 @@ function viewCommunity(id) {
 }
 
 function viewCourses() {
-  const user = Store.current();
-  return `<header class="page-head"><h1>Courses</h1><p>Short lessons for the days between sessions. The ones on this page are examples, so you can open a lesson and see the shape.</p></header>
-    ${SAMPLE.courses.map((course) => `<div class="row">
-      <div>
-        <h2><a href="#/courses/${course.id}">${esc(course.title)}</a></h2>
-        <p>${esc(course.summary)}</p>
-        <p><span class="tag ex">Example</span> <span class="tag">${esc(course.language)}</span> <span class="tag">${esc(course.level)}</span>
-        ${(user.languages || []).includes(course.language === "Arabic" ? "ar" : course.language === "French" ? "fr" : course.language === "Tunisian Arabic" ? "tn" : "en") ? `<span class="tag">Matches a language you picked</span>` : ""}</p>
-      </div>
-    </div>`).join("")}`;
+  return `<header class="page-head"><p class="kicker">LEARNING LIBRARY</p><h1>Practical business skills.</h1><p>Explore practical entrepreneurship lessons at your own pace. This library currently contains example content.</p></header><div class="course-catalog">${SAMPLE.courses.map((course,index) => {
+    const count = course.lessons.filter(lesson => Store.mine("lessons","lessonId",lesson.id)).length;
+    return `<article class="course-card"><a class="course-cover cover-${index % 4}" href="#/courses/${course.id}" aria-label="Open ${esc(course.title)}"><span>RISE MED / LEARNING</span><b aria-hidden="true">${['✳','↗','◇','✧'][index % 4]}</b><small>0${index+1}</small></a><div class="course-card-copy"><div class="course-meta"><span>${esc(course.level)}</span><span>${esc(course.language)}</span></div><h2><a href="#/courses/${course.id}">${esc(course.title)}</a></h2><p>${esc(course.summary)}</p><div class="course-card-foot"><span>${count} / ${course.lessons.length} lessons opened</span><a href="#/courses/${course.id}">Explore ↗</a></div><div class="lesson-progress"><i style="width:${Math.round(count/course.lessons.length*100)}%"></i></div></div></article>`;
+  }).join("")}</div>`;
 }
 
 function viewCourse(id) {
@@ -771,7 +739,12 @@ function render() {
     profile: "Profile"
   };
   document.title = (titles[name] || "RISE MED") + " · RISE MED";
-  if (name === "login" || name === "signup") root.innerHTML = authView(name);
+  if (window.RiseUI) window.RiseUI.unmount();
+  if (window.RiseUI && ["login", "signup", "onboarding"].includes(name)) {
+    root.innerHTML = "";
+    window.RiseUI.mount(root, name, Store.current());
+  }
+  else if (name === "login" || name === "signup") root.innerHTML = authView(name);
   else if (name === "onboarding") root.innerHTML = onboardView();
   else root.innerHTML = shell(name, page(name, route));
   window.scrollTo(0, 0);
@@ -860,8 +833,10 @@ async function onSubmit(event) {
       render();
       return;
     }
-    if (done) location.hash = "#/home";
-    else render();
+    if (done) {
+      if (location.hash === "#/home") render();
+      else location.hash = "#/home";
+    } else render();
     return;
   }
   if (kind === "profile") {
@@ -1032,5 +1007,7 @@ async function start() {
     render();
   }
 }
+
+window.RiseBridge = { pickRole(role) { Store.patch({ role, formError: "" }); } };
 
 start();
